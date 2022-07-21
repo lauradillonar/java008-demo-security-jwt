@@ -1,5 +1,6 @@
 package com.confluenciacreativa.demosecurityjwt.config;
 
+import com.confluenciacreativa.demosecurityjwt.filter.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,9 +9,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -20,6 +23,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     UserDetailsService usuarioDetailsService;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -40,7 +46,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/publico/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and().cors()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     // (1) Spring Security's HTTP Basic Authentication support in is enabled bay default.
@@ -55,6 +66,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
