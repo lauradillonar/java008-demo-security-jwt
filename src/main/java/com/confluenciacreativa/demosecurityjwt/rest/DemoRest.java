@@ -30,4 +30,31 @@ public class DemoRest {
         mensaje.put("contenido", "Hola Mundo");
         return ResponseEntity.ok(mensaje);
     }
+
+    @GetMapping("/admin")
+    public ResponseEntity<?> getMensajeAdmin(){
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("Datos del Usuario: {}", auth.getPrincipal());
+        logger.info("Datos de los Permisos {}", auth.getAuthorities());
+        logger.info("Está autenticado {}", auth.isAuthenticated());
+
+        Map<String, String> mensaje = new HashMap<>();
+        mensaje.put("contenido", "Hola Admin");
+        return ResponseEntity.ok(mensaje);
+    }
+
+    @GetMapping("/publico")
+    public ResponseEntity<?> getMensajePublico(){
+
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        logger.info("Datos del Usuario: {}", auth.getPrincipal());
+        logger.info("Datos de los Permisos: {}", auth.getAuthorities());
+        logger.info("Está autenticado {}", auth.isAuthenticated());
+
+        Map<String, String> mensaje = new HashMap<>();
+        mensaje.put("contenido", "Hola mundo");
+        return ResponseEntity.ok(mensaje);
+    }
 }
